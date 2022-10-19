@@ -4,6 +4,8 @@ import io.github.alexkar.happycustomer.dao.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 @Service
 public class RewardRequestHandler {
     @Autowired
@@ -17,7 +19,11 @@ public class RewardRequestHandler {
     }
 
     public long total() {
-        Long purchase = orderRepository.findTotalPurchase();
-        return pointsCalculator.calc(purchase);
+        long total = 0L;
+        Collection<Long> ordersPerCustomer = orderRepository.findAllPurchases();
+        for(Long perCustomer : ordersPerCustomer) {
+            total = Math.addExact(total, pointsCalculator.calc(perCustomer));
+        }
+        return total;
     }
 }
