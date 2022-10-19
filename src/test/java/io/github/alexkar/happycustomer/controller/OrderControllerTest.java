@@ -1,8 +1,8 @@
 package io.github.alexkar.happycustomer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.alexkar.happycustomer.dto.SaleRequestV1;
-import io.github.alexkar.happycustomer.service.SaleRequestHandler;
+import io.github.alexkar.happycustomer.dto.OrderRequestV1;
+import io.github.alexkar.happycustomer.service.OrderRequestHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -21,15 +21,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = SaleController.class)
+        classes = OrderController.class)
 @AutoConfigureMockMvc
 @EnableWebMvc
-class SaleControllerTest {
+class OrderControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private SaleRequestHandler saleRequestHandler;
+    private OrderRequestHandler orderRequestHandler;
 
     @ParameterizedTest
     @CsvSource(value = {
@@ -39,11 +39,11 @@ class SaleControllerTest {
             "null | null | null",
     }, nullValues = "null", delimiter = '|')
     public void badRequestTest(String consumerId, String itemId, Long price) throws Exception {
-        SaleRequestV1 request = new SaleRequestV1();
+        OrderRequestV1 request = new OrderRequestV1();
         request.setCustomerId(consumerId);
         request.setItemId(itemId);
         request.setPrice(price);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/v1/sale")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/v1/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(request));
 
@@ -52,30 +52,30 @@ class SaleControllerTest {
 
     @Test
     public void correctRequestTest() throws Exception {
-        SaleRequestV1 request = new SaleRequestV1();
+        OrderRequestV1 request = new OrderRequestV1();
         request.setCustomerId("1");
         request.setItemId("2");
         request.setPrice(100L);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/v1/sale")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/v1/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(request));
 
         mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
-        Mockito.verify(saleRequestHandler, Mockito.times(1)).handleSaleRequest(request);
+        Mockito.verify(orderRequestHandler, Mockito.times(1)).handleOrderRequest(request);
     }
 
     @Test
     public void serverErrorTest() throws Exception {
-        SaleRequestV1 request = new SaleRequestV1();
+        OrderRequestV1 request = new OrderRequestV1();
         request.setCustomerId("1");
         request.setItemId("2");
         request.setPrice(100L);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/v1/sale")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/v1/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(request));
         Mockito.doThrow(RuntimeException.class)
-                .when(saleRequestHandler).handleSaleRequest(request);
+                .when(orderRequestHandler).handleOrderRequest(request);
 
         mockMvc.perform(requestBuilder).andExpect(status().is5xxServerError());
     }
@@ -83,7 +83,7 @@ class SaleControllerTest {
 
     @Test
     public void notFoundTest() throws Exception {
-        SaleRequestV1 request = new SaleRequestV1();
+        OrderRequestV1 request = new OrderRequestV1();
         request.setCustomerId("1");
         request.setItemId("2");
         request.setPrice(100L);
@@ -91,7 +91,7 @@ class SaleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(request));
         Mockito.doThrow(RuntimeException.class)
-                .when(saleRequestHandler).handleSaleRequest(request);
+                .when(orderRequestHandler).handleOrderRequest(request);
 
         mockMvc.perform(requestBuilder).andExpect(status().is4xxClientError());
     }

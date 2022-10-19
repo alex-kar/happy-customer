@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 @Data
-public class SaleRequestV1 {
+public class OrderRequestV1 {
     @NotBlank(message = "Customer id is mandatory")
     private String customerId;
     @NotBlank(message = "Item id is mandatory")

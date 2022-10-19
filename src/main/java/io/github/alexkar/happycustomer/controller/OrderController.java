@@ -1,7 +1,7 @@
 package io.github.alexkar.happycustomer.controller;
 
-import io.github.alexkar.happycustomer.service.SaleRequestHandler;
-import io.github.alexkar.happycustomer.dto.SaleRequestV1;
+import io.github.alexkar.happycustomer.service.OrderRequestHandler;
+import io.github.alexkar.happycustomer.dto.OrderRequestV1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,14 +14,14 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @RequestMapping("v1")
-public class SaleController extends BaseController {
+public class OrderController extends BaseController {
     @Autowired
-    private SaleRequestHandler saleRequestHandler;
+    private OrderRequestHandler orderRequestHandler;
 
-    @PostMapping("/sale")
-    public void sale(@Valid @RequestBody SaleRequestV1 request) {
-        log.debug("Sale request [{}]", request);
-        saleRequestHandler.handleSaleRequest(request);
+    @PostMapping("/order")
+    public void order(@Valid @RequestBody OrderRequestV1 request) {
+        log.debug("Order [{}]", request);
+        orderRequestHandler.handleOrderRequest(request);
     }
 
 }
